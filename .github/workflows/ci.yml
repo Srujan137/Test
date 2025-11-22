@@ -1,43 +1,42 @@
-name: CI
+name: CI with SonarCloud
 
 on:
   push:
-    branches:
-      - main
-      - 'feature/*'
+    branches: [ "main" ]
   pull_request:
+    branches: [ "main" ]
 
 jobs:
-  sonar_scan:
-    name: SonarCloud Scan
+  build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required by SonarCloud
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
-      - name: Install sonar-scanner
+      - name: Install dependencies
         run: |
-          wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-7.0.2.4839-linux-x64.zip
-          unzip sonar-scanner-cli-7.0.2.4839-linux-x64.zip
-          echo "${PWD}/sonar-scanner-7.0.2.4839-linux-x64/bin" >> $GITHUB_PATH
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || true
 
-      - name: Run SonarCloud analysis
-        run: |
-          sonar-scanner \
-            -Dsonar.organization=${{ secrets.SONAR_ORG }} \
-            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
-            -Dsonar.sources=. \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      # -----------------------------------------
+      # SonarCloud Scan (Official GitHub Action)
+      # -----------------------------------------
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          organization: YOUR_ORG_NAME         # <- change this ONLY
+          projectKey: test                    # your project key
+          projectBaseDir: .                   # scan entire repo
         env:
-          SONAR_SCANNER_OPTS: "-Dsonar.featureFlags=none"
-
-      
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   deploy_s3:
     name: Upload to S3
