@@ -28,16 +28,18 @@ jobs:
 
       # ---- SONARCLOUD (NEW API) ----
       - name: Run SonarCloud analysis
-        uses: SonarSource/sonarqube-scan-action@v5.0.0
+        uses: SonarSource/sonarcloud-github-action@v1.5
         with:
           projectBaseDir: .
           args: >
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
             -Dsonar.organization=${{ secrets.SONAR_ORG }}
             -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.python.coverage.reportPaths=coverage.xml
             -Dsonar.sources=.
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: "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"
 
       
 
