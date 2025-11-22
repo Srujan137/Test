@@ -1,2 +1,2 @@
 # Test
-Testing sonarqube now 
+Testing sonarqube
