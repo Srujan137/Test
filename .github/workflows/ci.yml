@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  sonar_scan:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,17 +26,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt || true
 
-      # -----------------------------------------
-      # SonarCloud Scan (Official GitHub Action)
-      # -----------------------------------------
-      - name: SonarCloud Scan
+      - name: Run SonarCloud analysis
         uses: SonarSource/sonarcloud-github-action@master
         with:
-          organization: YOUR_ORG_NAME         # <- change this ONLY
-          projectKey: test                    # your project key
+          organization: ${{ secrets.SONAR_ORG }} \         # <- change this ONLY
+          projectKey: ${{ secrets.SONAR_PROJECT_KEY }} \                    # your project key
           projectBaseDir: .                   # scan entire repo
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
 
   deploy_s3:
     name: Upload to S3
