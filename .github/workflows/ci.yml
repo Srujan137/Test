@@ -1,0 +1,60 @@
+name: SonarQube CI + S3 Upload
+
+on:
+  push:
+    branches:
+      - main
+      - feature/**
+
+jobs:
+  sonar_scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install pysonar
+        run: pip install pysonar
+
+      - name: Run SonarQube analysis
+        run: |
+          pysonar \
+            --sonar-host-url=http://localhost:9000 \
+            --sonar-token=${{ secrets.SONAR_TOKEN }} \
+            --sonar-project-key=test
+          
+      - name: Get SonarQube issues
+        id: sonar_issues
+        run: |
+          issues=$(curl -s -u ${{ secrets.SONAR_TOKEN }}: \
+            "http://localhost:9000/api/issues/search?projects=test&resolved=false" | jq '.total')
+          echo "total_issues=$issues" >> $GITHUB_OUTPUT
+
+      - name: Fail if issues exist
+        if: steps.sonar_issues.outputs.total_issues != '0'
+        run: |
+          echo "SonarQube found issues. Failing build."
+          exit 1
+
+  upload_s3:
+    needs: sonar_scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install AWS CLI
+        run: sudo apt-get install awscli -y
+
+      - name: Upload to S3
+        run: |
+          aws s3 cp . s3://${{ secrets.S3_BUCKET }}/ --recursive
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
