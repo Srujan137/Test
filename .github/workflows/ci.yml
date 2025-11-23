@@ -47,7 +47,12 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: "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"
 
-      
+      # ---- SONARCLOUD QUALITY GATE CHECK ----
+      - name: SonarCloud Quality Gate Check
+        id: qualitygate
+        uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   deploy_s3:
     name: Upload to S3
