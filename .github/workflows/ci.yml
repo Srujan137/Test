@@ -45,7 +45,7 @@ jobs:
             -Dsonar.sources=.
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: "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"
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
 
       # ---- SONARCLOUD QUALITY GATE CHECK ----
       - name: SonarCloud Quality Gate Check
@@ -75,8 +75,8 @@ jobs:
 
       - name: Upload code to S3
         run: |
-          aws s3 cp . s3://${{ secrets.S3_BUCKET }}/ --recursive
+          aws s3 cp . s3://${{ secrets.S3_BUCKETT }}/ --recursive
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_IDD }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
