@@ -1,9 +1,6 @@
 import os  # Unused import
 import sys
 
-def unused_function():
-    a = 5  # Unused variable
-
 def duplicated_code():
     print("Hello")  # Duplicate code
     print("Hello")
@@ -23,8 +20,7 @@ def complex_function(x):
         print("Other")
 
 def potential_bug():
-    x = None
-    # This will raise an exception
+    x = "TEST"
     if x.lower() == "test":
         print("Bug!")
 
