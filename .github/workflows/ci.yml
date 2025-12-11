@@ -50,7 +50,7 @@ jobs:
       # ---- SONARCLOUD QUALITY GATE CHECK ----
       - name: SonarCloud Quality Gate Check
         id: qualitygate
-        uses: SonarSource/sonarqube-quality-gate-action@v1.1.0
+        uses: SonarSource/sonarqube-quality-gate-action@6a0bd5e0b9b823177ea123abee5a85f8c22fbd2e
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
